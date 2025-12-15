@@ -14,6 +14,9 @@ export class Role {
     name: string;
 
     @Column({ nullable: true })
+    companyId: string; // For custom roles per company
+
+    @Column({ nullable: true })
     description: string;
 
     @OneToMany(() => UserRole, (userRole) => userRole.role)
