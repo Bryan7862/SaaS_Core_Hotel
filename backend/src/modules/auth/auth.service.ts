@@ -112,4 +112,18 @@ export class AuthService {
             access_token: this.jwtService.sign(payload),
         };
     }
+
+    async getUserWithRoles(userId: string) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['userRoles', 'userRoles.role'],
+        });
+        if (!user) return null;
+
+        return {
+            userId: user.id,
+            email: user.email,
+            roles: user.userRoles.map(ur => ur.role.code), // Flatten to ['ADMIN', 'OWNER']
+        };
+    }
 }
