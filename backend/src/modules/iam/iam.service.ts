@@ -43,13 +43,13 @@ export class IamService {
     }
 
     async createPermission(createPermissionDto: CreatePermissionDto): Promise<Permission> {
-        const { code, description } = createPermissionDto;
+        const { code, resource, action, description } = createPermissionDto;
         const existingPermission = await this.permissionRepository.findOne({ where: { code } });
         if (existingPermission) {
             throw new BadRequestException('Permission with this code already exists');
         }
 
-        const permission = this.permissionRepository.create({ code, description });
+        const permission = this.permissionRepository.create({ code, resource, action, description });
         return this.permissionRepository.save(permission);
     }
 
