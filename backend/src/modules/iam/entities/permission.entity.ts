@@ -9,6 +9,12 @@ export class Permission {
     @Column({ unique: true })
     code: string;
 
+    @Column()
+    resource: string; // e.g., 'users', 'billing'
+
+    @Column()
+    action: string; // e.g., 'create', 'read'
+
     @Column({ nullable: true })
     description: string;
 
