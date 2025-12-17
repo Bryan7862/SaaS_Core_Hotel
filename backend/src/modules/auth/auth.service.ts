@@ -29,7 +29,7 @@ export class AuthService {
         }
 
         // 2. Create Company (Delegated)
-        const savedCompany = await this.organizationsService.create(companyName);
+        const savedCompany = await this.organizationsService.create(null, { name: companyName });
 
         // 3. Create User
         const salt = await bcrypt.genSalt();
@@ -88,10 +88,16 @@ export class AuthService {
         return this.userRepository.save(user);
     }
 
-    async getUsers(): Promise<User[]> {
-        return this.userRepository.find({
-            relations: ['userRoles', 'userRoles.role'],
-        });
+    async getUsers(companyId?: string): Promise<User[]> {
+        const query = this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.userRoles', 'userRole')
+            .leftJoinAndSelect('userRole.role', 'role');
+
+        if (companyId) {
+            query.where('userRole.companyId = :companyId', { companyId });
+        }
+
+        return query.getMany();
     }
 
     async validateUser(email: string, password: string): Promise<any> {
