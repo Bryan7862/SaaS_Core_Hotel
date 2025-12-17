@@ -14,7 +14,10 @@ export class Company {
     @Column()
     name: string;
 
-    @Column({ unique: true, nullable: true })
+    @Column({ nullable: true })
+    logoUrl: string;
+
+    @Column({ unique: true })
     slug: string;
 
     @Column({ type: 'enum', enum: CompanyStatus, default: CompanyStatus.ACTIVE })
