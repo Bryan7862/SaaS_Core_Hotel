@@ -33,7 +33,12 @@ export const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({ isOpen, on
         if (!selectedRoleId) return;
         setLoading(true);
         try {
-            await assignRole(userId, selectedRoleId); // Assuming companyId is inferred or default
+            const companyId = localStorage.getItem('current_company_id');
+            if (!companyId) {
+                alert('No active organization context found');
+                return;
+            }
+            await assignRole(userId, selectedRoleId, companyId);
             onRoleUpdated();
             onClose();
         } catch (error) {
