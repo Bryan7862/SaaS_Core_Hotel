@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Shield, Building2 } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, Building2, Trash2 } from 'lucide-react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
     const location = useLocation();
@@ -10,6 +10,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { path: '/organizations', label: 'Organizations', icon: Building2 },
         { path: '/users', label: 'Users', icon: Users },
         // { path: '/roles', label: 'Roles', icon: Shield },
+        { path: '/trash', label: 'Recycle Bin', icon: Trash2 },
     ];
 
     return (
