@@ -3,13 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #ffffff;
-  --bg-soft: #f8f9fa;
+  /* Light Mode (Default) */
+  --bg-primary: #F3F4F6;
+  --bg-soft: #FFFFFF;
   --primary: #000000;
-  --accent: #2c3e50;
-  --text: #000000;
-  --muted: #6c757d;
-  --border: #dee2e6;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --card-bg: #FFFFFF;
+  --input-bg: #FFFFFF;
+}
+
+[data-theme='dark'] {
+  /* Paleta Slate Premium - Equilibrada */
+  --bg-primary: #0F172A;  /* Fondo principal: Slate-900 (azul oscuro profundo, no negro puro) */
+  --bg-soft: #060912;     /* Sidebar: Notablemente más oscuro que el contenido */
+  --primary: #3B82F6;     /* Azul vibrante para botones y acentos */
+  --text: #F1F5F9;        /* Texto principal: Slate-100 (blanco suave) */
+  --muted: #94A3B8;       /* Texto secundario: Slate-400 */
+  --border: #334155;      /* Bordes: Slate-700 (visibles pero sutiles) */
+  --card-bg: #1E293B;     /* Tarjetas/Tablas: Slate-800 (contraste sutil con el fondo) */
+  --input-bg: #1E293B;    /* Inputs: igual que tarjetas para integración */
+}
+
+/* Forzar inputs oscuros globalmente en modo dark */
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme='dark'] .border-border {
+    border-color: var(--border) !important;
 }
 
 body {

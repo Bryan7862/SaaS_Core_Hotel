@@ -49,17 +49,17 @@ export const OrganizationsPage = () => {
         window.location.href = '/';
     };
 
-    if (loading) return <div className="p-8 text-center">Loading your organizations...</div>;
+    if (loading) return <div className="p-8 text-center text-[var(--text)]">Loading your organizations...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl w-full space-y-8">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                        My Organizations
+                    <h2 className="mt-6 text-3xl font-extrabold text-[var(--text)]">
+                        Mis Organizaciones
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Select an organization to manage or create a new one.
+                    <p className="mt-2 text-sm text-[var(--muted)]">
+                        Selecciona una organización para administrar o crea una nueva.
                     </p>
                 </div>
 
@@ -67,76 +67,76 @@ export const OrganizationsPage = () => {
                     {/* Create New Card */}
                     <div
                         onClick={() => setShowCreate(true)}
-                        className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-gray-300 flex flex-col items-center justify-center h-48"
+                        className="relative group bg-[var(--card-bg)] p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-[var(--primary)] rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center h-48"
                     >
-                        <div className="p-3 rounded-full bg-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <Plus className="h-8 w-8 text-gray-400 group-hover:text-indigo-600" />
+                        <div className="p-3 rounded-full bg-[var(--bg-primary)] group-hover:bg-[var(--primary)]/10 transition-colors">
+                            <Plus className="h-8 w-8 text-[var(--muted)] group-hover:text-[var(--primary)]" />
                         </div>
-                        <h3 className="mt-4 text-lg font-medium text-gray-900 group-hover:text-indigo-600">Create New</h3>
+                        <h3 className="mt-4 text-lg font-medium text-[var(--text)] group-hover:text-[var(--primary)]">Crear Nueva</h3>
                     </div>
 
                     {/* Organization Cards */}
                     {orgs.map((org) => (
-                        <div key={org.id} className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex flex-col h-48">
+                        <div key={org.id} className="relative bg-[var(--card-bg)] p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-[var(--border)] flex flex-col h-48">
                             <div className="flex-1">
                                 <div className="flex items-center space-x-3">
                                     <div className="flex-shrink-0">
                                         {org.logoUrl ? (
                                             <img className="h-10 w-10 rounded-full" src={org.logoUrl} alt="" />
                                         ) : (
-                                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
+                                            <div className="h-10 w-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--primary)] font-bold border border-[var(--border)]">
                                                 {org.name.substring(0, 2).toUpperCase()}
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="text-lg font-medium text-gray-900 truncate">{org.name}</h3>
+                                    <h3 className="text-lg font-medium text-[var(--text)] truncate">{org.name}</h3>
                                 </div>
-                                <p className="mt-4 text-xs text-gray-500 font-mono bg-gray-50 p-1 rounded inline-block">
+                                <p className="mt-4 text-xs text-[var(--muted)] font-mono bg-[var(--bg-primary)] p-1 rounded inline-block">
                                     {org.slug}
                                 </p>
                             </div>
                             <button
                                 onClick={() => handleSelect(org.id)}
-                                className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)]"
                             >
-                                Enter Workspace <ArrowRight className="ml-2 h-4 w-4" />
+                                Entrar al Workspace <ArrowRight className="ml-2 h-4 w-4" />
                             </button>
                         </div>
                     ))}
                 </div>
 
-                {/* Create Modal (Simple inline absolute for now) */}
+                {/* Create Modal */}
                 {showCreate && (
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full m-4">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Create New Organization</h3>
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                        <div className="bg-[var(--card-bg)] rounded-lg p-6 max-w-md w-full m-4 border border-[var(--border)] shadow-xl">
+                            <h3 className="text-lg font-medium text-[var(--text)] mb-4">Crear Nueva Organización</h3>
                             <form onSubmit={handleCreate}>
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                                    <label className="block text-sm font-medium text-[var(--muted)] mb-1">Nombre de la Organización</label>
                                     <input
                                         type="text"
                                         autoFocus
                                         required
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                        className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded-md px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                         value={newOrgName}
                                         onChange={(e) => setNewOrgName(e.target.value)}
-                                        placeholder="e.g. Acme Corp"
+                                        placeholder="ej. Acme Corp"
                                     />
                                 </div>
                                 <div className="flex justify-end gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setShowCreate(false)}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                        className="px-4 py-2 border border-[var(--border)] rounded-md text-sm font-medium text-[var(--muted)] hover:bg-[var(--bg-primary)]"
                                     >
-                                        Cancel
+                                        Cancelar
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={creating}
-                                        className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+                                        className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 disabled:opacity-50"
                                     >
-                                        {creating ? 'Creating...' : 'Create Organization'}
+                                        {creating ? 'Creando...' : 'Crear Organización'}
                                     </button>
                                 </div>
                             </form>
