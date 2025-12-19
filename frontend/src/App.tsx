@@ -6,6 +6,9 @@ import { UsersPage } from './modules/iam/pages/UsersPage'; // Modular Version
 import { OrganizationsPage } from './modules/organizations/pages/OrganizationsPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { LoginPage } from './modules/auth/pages/LoginPage';
+import { TrashPage } from './modules/trash/pages/TrashPage';
+
+import { RequireAuth } from './components/RequireAuth';
 
 function App() {
     return (
@@ -16,14 +19,17 @@ function App() {
                 <Route
                     path="/*"
                     element={
-                        <Layout>
-                            <Routes>
-                                <Route path="/" element={<DashboardPage />} />
-                                {/* <Route path="/roles" element={<RolesPage />} /> */}
-                                <Route path="/users" element={<UsersPage />} />
-                                <Route path="/organizations" element={<OrganizationsPage />} />
-                            </Routes>
-                        </Layout>
+                        <RequireAuth>
+                            <Layout>
+                                <Routes>
+                                    <Route path="/" element={<DashboardPage />} />
+                                    {/* <Route path="/roles" element={<RolesPage />} /> */}
+                                    <Route path="/users" element={<UsersPage />} />
+                                    <Route path="/organizations" element={<OrganizationsPage />} />
+                                    <Route path="/trash" element={<TrashPage />} />
+                                </Routes>
+                            </Layout>
+                        </RequireAuth>
                     }
                 />
             </Routes>
