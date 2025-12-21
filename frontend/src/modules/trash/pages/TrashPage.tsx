@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../../../lib/api';
-import { RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
+import { RotateCcw, Trash2 } from 'lucide-react';
 
 export const TrashPage = () => {
     const [activeTab, setActiveTab] = useState<'users' | 'orgs'>('users');
