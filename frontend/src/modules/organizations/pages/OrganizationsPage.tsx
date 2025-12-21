@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, ArrowRight, Trash2 } from 'lucide-react';
 import { getMyOrganizations, createOrganization } from '../api';
 import { api } from '../../../lib/api';
@@ -108,34 +108,24 @@ export const OrganizationsPage = () => {
                                     {org.slug}
                                 </p>
                             </div>
-<<<<<<< HEAD
-                            <button
-                                onClick={() => handleSelect(org.id)}
-                                className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)]"
-                            >
-                                Entrar al Workspace <ArrowRight className="ml-2 h-4 w-4" />
-                            </button>
-=======
-
-                            <div className="mt-4 grid grid-cols-4 gap-2">
+                            <div className="mt-4 flex gap-2">
                                 <button
                                     onClick={() => handleSelect(org.id)}
-                                    className="col-span-3 flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="flex-1 flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)]"
                                 >
-                                    Enter <ArrowRight className="ml-2 h-4 w-4" />
+                                    Entrar <ArrowRight className="ml-2 h-4 w-4" />
                                 </button>
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleDeleteOrg(org.id);
                                     }}
-                                    className="col-span-1 flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    className="flex items-center justify-center px-3 py-2 border border-[var(--border)] text-sm font-medium rounded-md text-red-600 bg-[var(--card-bg)] hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                     title="Suspend Organization"
                                 >
                                     <Trash2 size={16} />
                                 </button>
                             </div>
->>>>>>> origin/master
                         </div>
                     ))}
                 </div>
