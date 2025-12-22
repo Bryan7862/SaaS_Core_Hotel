@@ -44,6 +44,7 @@ export class AuthService {
             lastName,
             defaultCompany: savedCompany,
             defaultCompanyId: savedCompany.id,
+            status: UserStatus.ACTIVE,
         });
         const savedUser = await this.userRepository.save(user);
 
@@ -92,6 +93,7 @@ export class AuthService {
             defaultCompanyId,
             firstName,
             lastName,
+            status: UserStatus.ACTIVE,
         });
 
         const savedUser = await this.userRepository.save(user);
@@ -148,9 +150,9 @@ export class AuthService {
         const query = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.userRoles', 'userRole')
             .leftJoinAndSelect('userRole.role', 'role')
-            .where('userRole.companyId = :companyId', { companyId })
-            // FILTER: Only show ACTIVE users
-            .andWhere('user.status = :status', { status: UserStatus.ACTIVE });
+            .where('userRole.companyId = :companyId', { companyId });
+        // FILTER REMOVED: Show all users regardless of status
+        // .andWhere('user.status = :status', { status: UserStatus.ACTIVE });
 
         const results = await query.getMany();
         console.log(`[getUsers] Found ${results.length} users`); // DEBUG
@@ -217,6 +219,9 @@ export class AuthService {
         return {
             userId: user.id,
             email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            defaultCompanyId: user.defaultCompanyId,
             roles: user.userRoles.map(ur => ur.role.code), // Flatten to ['ADMIN', 'OWNER']
         };
     }

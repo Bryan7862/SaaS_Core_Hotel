@@ -32,6 +32,12 @@ export class AuthController {
         return this.authService.getUsers(req.user.userId, companyId);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('profile')
+    getProfile(@Req() req) {
+        return this.authService.getUserWithRoles(req.user.userId);
+    }
+
     // New Endpoint for Global Admin
     // TODO: Add @Roles('SUPER_ADMIN') when RolesGuard is fully configured for it
     @UseGuards(JwtAuthGuard)
