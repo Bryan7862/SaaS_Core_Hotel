@@ -19,7 +19,23 @@ export const LoginPage = () => {
             });
 
             console.log('Login success:', response.data);
-            localStorage.setItem('access_token', response.data.access_token);
+            const token = response.data.access_token;
+            localStorage.setItem('access_token', token);
+
+            // Fetch User Profile to get Default Context
+            try {
+                const profileResponse = await axios.get('http://localhost:3000/admin/auth/profile', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const { defaultCompanyId } = profileResponse.data;
+                if (defaultCompanyId) {
+                    localStorage.setItem('current_company_id', defaultCompanyId);
+                } else {
+                    console.warn('User has no default company tied to account');
+                }
+            } catch (profileErr) {
+                console.error('Failed to fetch profile context', profileErr);
+            }
 
             // Auto-redirect to dashboard
             navigate('/');
