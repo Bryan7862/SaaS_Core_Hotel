@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { IamModule } from './modules/iam/iam.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
@@ -9,13 +10,13 @@ import { TrashModule } from './modules/trash/trash.module';
     imports: [
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: '127.0.0.1',
-            port: 5432,
-            username: 'postgres',
-            password: 'Sieghart069',
-            database: 'saas_db',
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT) || 5432,
+            username: process.env.DB_USERNAME || 'postgres',
+            password: process.env.DB_PASSWORD || 'postgres',
+            database: process.env.DB_DATABASE || 'saas_core',
             autoLoadEntities: true,
-            synchronize: true, // Be careful with this in production
+            synchronize: true,
         }),
         AuthModule,
         IamModule,

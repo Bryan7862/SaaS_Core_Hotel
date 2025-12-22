@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@nestjs/config": "^4.0.2",
     "ansi-regex": "^5.0.1",
     "ansi-styles": "^4.3.0",
     "ansis": "^4.2.0",
