@@ -3,13 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrganizationsService } from './organizations.service';
 import { OrganizationsController } from './organizations.controller';
 import { Company } from './entities/company.entity';
-import { IamModule } from '../iam/iam.module';
 import { UserRole } from '../iam/entities/user-role.entity';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { IamModule } from '../iam/iam.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Company, UserRole]),
-        IamModule
+        IamModule,
+        SubscriptionsModule,
     ],
     controllers: [OrganizationsController],
     providers: [OrganizationsService],
