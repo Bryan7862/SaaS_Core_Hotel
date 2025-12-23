@@ -11,6 +11,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { BillingPage } from './pages/BillingPage';
 import { CreateInvoicePage } from './pages/CreateInvoicePage';
+import { PricingPage } from './modules/subscriptions/pages/PricingPage';
 import { RequireAuth } from './components/RequireAuth';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -39,6 +40,7 @@ function App() {
                                         <Route path="/settings/billing" element={<BillingPage />} />
                                         <Route path="/settings/orgs" element={<OrganizationsPage />} />
                                         <Route path="/invoices/new" element={<CreateInvoicePage />} />
+                                        <Route path="/pricing" element={<PricingPage />} />
                                     </Routes>
                                 </Layout>
                             </RequireAuth>
