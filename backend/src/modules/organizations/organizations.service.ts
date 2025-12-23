@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Company, CompanyStatus } from './entities/company.entity';
 import { UserRole } from '../iam/entities/user-role.entity';
 import { IamService } from '../iam/iam.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
@@ -17,6 +18,7 @@ export class OrganizationsService {
         @InjectRepository(UserRole)
         private userRoleRepository: Repository<UserRole>,
         private iamService: IamService,
+        private subscriptionsService: SubscriptionsService,
     ) { }
 
     async create(userId: string | null, createDto: CreateOrganizationDto): Promise<Company> {
@@ -74,6 +76,9 @@ export class OrganizationsService {
                 console.error('OWNER role code not found. Organization created but user not assigned as Owner.');
             }
         }
+
+        // Create Initial Subscription (FREE)
+        await this.subscriptionsService.createInitialSubscription(savedCompany.id);
 
         return savedCompany;
     }
