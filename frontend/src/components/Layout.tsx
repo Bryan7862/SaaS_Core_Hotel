@@ -35,30 +35,49 @@ export function Layout({ children }: { children: React.ReactNode }) {
     // Cargar datos del perfil
     useEffect(() => {
         const loadProfileData = async () => {
-            // Cargar imagen de localStorage (fallback rápido) o API si existiera
             const savedImage = localStorage.getItem('profileImage');
-            if (savedImage) {
-                setProfileImage(savedImage);
+            if (savedImage) setProfileImage(savedImage);
+
+            // Cargar datos locales inmediatamente
+            const savedProfile = localStorage.getItem('userProfile');
+            if (savedProfile) {
+                try {
+                    const parsed = JSON.parse(savedProfile);
+                    if (parsed.nombre || parsed.apellido) {
+                        setUserName(`${parsed.nombre || ''} ${parsed.apellido || ''}`.trim());
+                    }
+                    if (parsed.email) setUserEmail(parsed.email);
+                } catch (e) { console.error(e); }
             }
 
-            // Cargar datos reales del API
             try {
+                // Use the token directly with fetch to avoid circular dependency issues if api.ts imports layout? 
+                // actually api.ts is fine. But let's stick to fetch for zero-dep here or use api.
+                // Let's use the raw fetch but improve the logic.
                 const token = localStorage.getItem('access_token');
-                if (token) {
-                    const response = await fetch('http://localhost:3000/admin/auth/profile', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.firstName || data.lastName) {
-                            setUserName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
-                        }
-                        if (data.email) {
-                            setUserEmail(data.email);
-                        }
+                if (!token) return;
+
+                const response = await fetch('http://localhost:3000/admin/auth/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Profile Data Loaded:", data); // Debug
+
+                    if (data.email) {
+                        setUserEmail(data.email);
                     }
+
+                    // Logic: If name exists, use it. If not, use email part or "Usuario"
+                    if (data.firstName || data.lastName) {
+                        setUserName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
+                    } else if (data.email) {
+                        // Fallback to email username if no name set
+                        setUserName(data.email.split('@')[0]);
+                    }
+                } else {
+                    console.error("Profile fetch failed:", response.status);
                 }
             } catch (error) {
                 console.error("Failed to load profile for sidebar", error);
