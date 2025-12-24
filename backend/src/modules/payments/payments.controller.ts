@@ -25,11 +25,15 @@ export class PaymentsController {
 
         if (planCode === PlanCode.BASIC) {
             amount = 5000; // S/ 50.00
-            description = 'Suscripción BASIC';
+            description = 'Suscripción Básico';
         }
         else if (planCode === PlanCode.PRO) {
             amount = 10000; // S/ 100.00
-            description = 'Suscripción PRO';
+            description = 'Suscripción Pro';
+        }
+        else if (planCode === PlanCode.MAX) {
+            amount = 20000; // S/ 200.00
+            description = 'Suscripción MAX';
         }
         else throw new BadRequestException('Invalid Plan for Checkout');
 
