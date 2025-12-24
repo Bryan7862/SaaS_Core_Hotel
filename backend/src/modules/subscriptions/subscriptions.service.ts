@@ -12,16 +12,30 @@ export class SubscriptionsService {
         private subscriptionRepository: Repository<Subscription>,
     ) { }
 
-    // 1. Create Initial Subscription (Called by OrganizationsModule)
+    // 1. Create Initial Subscription (30-day TRIAL)
     async createInitialSubscription(organizationId: string): Promise<Subscription> {
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 30); // 30 Days Trial
+
         const subscription = this.subscriptionRepository.create({
             organizationId,
-            planCode: PlanCode.FREE,
-            status: SubscriptionStatus.ACTIVE,
+            planCode: PlanCode.FREE, // We keep 'FREE' code internally for Trial or create a specific TRIAL code if preferred. Keeping FREE as base for now but status TRIAL.
+            status: SubscriptionStatus.TRIAL,
             startedAt: new Date(),
-            endsAt: null, // FREE plan has no end date
+            endsAt: trialEndDate,
         });
         return this.subscriptionRepository.save(subscription);
+    }
+
+    getPlanLimits(planCode: PlanCode, status: SubscriptionStatus): { maxUsers: number } {
+        if (status === SubscriptionStatus.TRIAL) return { maxUsers: 1 };
+
+        switch (planCode) {
+            case PlanCode.BASIC: return { maxUsers: 5 };
+            case PlanCode.PRO: return { maxUsers: 8 };
+            case PlanCode.MAX: return { maxUsers: 15 };
+            default: return { maxUsers: 1 }; // Fallback (e.g. cancelled/suspended)
+        }
     }
 
     // 2. Get Current Subscription
