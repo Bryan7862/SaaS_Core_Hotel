@@ -9,12 +9,14 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { User } from './entities/user.entity';
 import { IamModule } from '../iam/iam.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User]),
         IamModule,
         OrganizationsModule,
+        SubscriptionsModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
