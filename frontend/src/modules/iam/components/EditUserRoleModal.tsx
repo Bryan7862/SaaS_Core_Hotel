@@ -20,6 +20,19 @@ export const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({ isOpen, on
         }
     }, [isOpen]);
 
+    // Pre-select current role when roles are loaded
+    useEffect(() => {
+        if (roles.length > 0 && currentUserRoles.length > 0) {
+            const currentCode = currentUserRoles[0]; // Assuming single role
+            const matchingRole = roles.find(r => r.code === currentCode);
+            if (matchingRole) {
+                setSelectedRoleId(matchingRole.id);
+            }
+        } else if (roles.length > 0 && currentUserRoles.length === 0) {
+            setSelectedRoleId('');
+        }
+    }, [roles, currentUserRoles, isOpen]);
+
     const loadRoles = async () => {
         try {
             const data = await getRoles();
@@ -38,12 +51,14 @@ export const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({ isOpen, on
                 alert('No active organization context found');
                 return;
             }
+            // Logic change: Backend now handles "Replace" logic automatically
             await assignRole(userId, selectedRoleId, companyId);
             onRoleUpdated();
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to assign role', error);
-            alert('Failed to assign role');
+            const msg = error.response?.data?.message || 'Failed to assign role';
+            alert(`Error: ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -64,44 +79,55 @@ export const EditUserRoleModal: React.FC<EditUserRoleModalProps> = ({ isOpen, on
             alignItems: 'center',
             zIndex: 1000
         }}>
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                <h3 className="text-lg font-bold mb-4">Manage User Roles</h3>
+            <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
+                <h3 className="text-xl font-bold mb-2 text-gray-800">Asignar Rol de Usuario</h3>
+                <p className="text-sm text-gray-500 mb-6">Seleccione el rol único para este usuario en la organización. Se reemplazará cualquier rol anterior.</p>
 
-                <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Current Roles:</p>
-                    <div className="flex gap-2 flex-wrap">
-                        {currentUserRoles.length > 0 ? (
-                            currentUserRoles.map(role => (
-                                <span key={role} className="bg-gray-100 px-2 py-1 rounded text-xs">{role}</span>
-                            ))
-                        ) : (
-                            <span className="text-gray-400 text-xs">No roles assigned</span>
-                        )}
-                    </div>
+                <div className="space-y-3 mb-8">
+                    {roles.map(role => {
+                        const isSelected = selectedRoleId === role.id;
+                        return (
+                            <div
+                                key={role.id}
+                                onClick={() => setSelectedRoleId(role.id)}
+                                className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${isSelected
+                                        ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="roleSelect"
+                                    value={role.id}
+                                    checked={isSelected}
+                                    onChange={() => setSelectedRoleId(role.id)}
+                                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-3"
+                                />
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className={`font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>{role.name}</span>
+                                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded uppercase">{role.code}</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-0.5">{role.description}</p>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
 
-                <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Assign New Role</label>
-                    <select
-                        className="w-full border p-2 rounded"
-                        value={selectedRoleId}
-                        onChange={(e) => setSelectedRoleId(e.target.value)}
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
                     >
-                        <option value="">Select a role...</option>
-                        {roles.map(role => (
-                            <option key={role.id} value={role.id}>{role.name} ({role.code})</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex justify-end gap-2">
-                    <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Close</button>
+                        Cancelar
+                    </button>
                     <button
                         onClick={handleAssign}
                         disabled={!selectedRoleId || loading}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                     >
-                        {loading ? 'Saving...' : 'Assign Role'}
+                        {loading ? 'Guardando...' : 'Confirmar Cambio'}
                     </button>
                 </div>
             </div>
