@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { UserPlus, Users, Trash2 } from 'lucide-react';
 import { getUsers } from '../api';
 import { RoleBadge } from '../components/RoleBadge';
-import { CreateRoleModal } from '../components/CreateRoleModal';
+import { Can } from '../../../components/Can';
 import { EditUserRoleModal } from '../components/EditUserRoleModal';
+import { ManageRolesModal } from '../components/ManageRolesModal';
 import { api } from '../../../lib/api'; // Using default axios instance for Create User for now
 
 export const UsersPage = () => {
@@ -13,7 +14,7 @@ export const UsersPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     // Modals
-    const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
+    const [isManageRolesOpen, setIsManageRolesOpen] = useState(false);
     const [isEditRoleOpen, setIsEditRoleOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<any>(null);
 
@@ -65,7 +66,7 @@ export const UsersPage = () => {
             await api.post('/admin/auth/users', payload); // Ensure correct endpoint path
             setFormData({ email: '', password: '', firstName: '', lastName: '', defaultCompanyId: '' });
             loadUsers();
-            alert('User created successfully');
+            alert('Usuario creado exitosamente');
         } catch (err: any) {
             console.error('Failed to create user', err);
             const msg = Array.isArray(err.response?.data?.message)
@@ -102,76 +103,79 @@ export const UsersPage = () => {
                         </div>
                         <h2 className="text-xl font-bold text-[var(--text)]">Crear Usuario</h2>
                     </div>
-                    {error && (
-                        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                            {error}
-                        </div>
-                    )}
-                    <form onSubmit={handleCreateUser} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                    <Can resource="users" action="create">
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={handleCreateUser} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                        placeholder="Juan"
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                        placeholder="Perez"
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    />
+                                </div>
+                            </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <label className="block text-sm font-medium text-[var(--muted)] mb-1">Email</label>
                                 <input
-                                    type="text"
+                                    type="email"
                                     required
-                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                    placeholder="John"
-                                    value={formData.firstName}
-                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                                    placeholder="john@company.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <label className="block text-sm font-medium text-[var(--muted)] mb-1">Contraseña</label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     required
-                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                    placeholder="Doe"
-                                    value={formData.lastName}
-                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    minLength={6}
+                                    className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                                    placeholder="Min. 6 caracteres"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
                             </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--muted)] mb-1">Email</label>
-                            <input
-                                type="email"
-                                required
-                                className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                                placeholder="john@company.com"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--muted)] mb-1">Password</label>
-                            <input
-                                type="password"
-                                required
-                                minLength={6}
-                                className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                                placeholder="Min. 6 characters"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--muted)] mb-1">Default Company ID (UUID)</label>
-                            <input
-                                type="text"
-                                className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                                placeholder="Optional - auto-filled from current context"
-                                value={formData.defaultCompanyId}
-                                onChange={(e) => setFormData({ ...formData, defaultCompanyId: e.target.value })}
-                            />
-                            <div className="text-xs text-gray-400 mt-1">
-                                Creating user for current organization context.
+                            <div>
+                                <label className="block text-sm font-medium text-[var(--muted)] mb-1">ID de Empresa por Defecto (UUID)</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                                    placeholder="Opcional - se completa automáticamente según el contexto actual"
+                                    value={formData.defaultCompanyId}
+                                    onChange={(e) => setFormData({ ...formData, defaultCompanyId: e.target.value })}
+                                />
+                                <div className="text-xs text-gray-400 mt-1">
+                                    Creando usuario para la organización actual.
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" disabled={loading} className="w-full bg-[var(--primary)] text-white py-2 rounded hover:opacity-90 transition-opacity font-medium">
-                            Create User
-                        </button>
-                    </form>
+                            <button type="submit" disabled={loading} className="w-full bg-[var(--primary)] text-white py-2 rounded hover:opacity-90 transition-opacity font-medium">
+                                Crear Usuario
+                            </button>
+                        </form>
+                    </Can>
+                    {!users.find(u => u.email === formData.email) && <Can resource="users" action="create" fallback={<div className="p-4 text-center text-gray-400 bg-gray-50 rounded">No tienes permisos para crear usuarios.</div>} children={null} />}
                 </div>
 
                 {/* Role Management Actions */}
@@ -180,13 +184,15 @@ export const UsersPage = () => {
                         <h2 className="text-xl font-bold mb-2 text-[var(--text)]">Gestión de Roles</h2>
                         <p className="text-[var(--muted)]">Definir nuevos roles para la organización.</p>
                     </div>
-                    <button
-                        onClick={() => setIsCreateRoleOpen(true)}
-                        className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition-colors flex items-center gap-2 font-medium"
-                    >
-                        <span>+ Nueva Definición de Rol</span>
-                    </button>
-                </div >
+                    <Can resource="roles" action="read">
+                        <button
+                            onClick={() => setIsManageRolesOpen(true)}
+                            className="bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 transition-colors flex items-center gap-2 font-medium"
+                        >
+                            <span>Gestionar Roles y Permisos</span>
+                        </button>
+                    </Can>
+                </div>
             </div >
 
             {/* Users List */}
@@ -201,11 +207,11 @@ export const UsersPage = () => {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-[var(--border)] text-[var(--muted)] text-sm">
-                                <th className="py-3 px-4">Name</th>
+                                <th className="py-3 px-4">Nombre</th>
                                 <th className="py-3 px-4">Email</th>
-                                <th className="py-3 px-4">Status</th>
-                                <th className="py-3 px-4">Roles (New)</th>
-                                <th className="py-3 px-4">Actions</th>
+                                <th className="py-3 px-4">Estado</th>
+                                <th className="py-3 px-4">Roles</th>
+                                <th className="py-3 px-4">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)]">
@@ -217,7 +223,7 @@ export const UsersPage = () => {
                                     <td className="py-3 px-4 font-medium text-[var(--muted)]">{user.email}</td>
                                     <td className="py-3 px-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                                            {user.status || 'ACTIVE'}
+                                            {user.status === 'ACTIVE' ? 'ACTIVO' : user.status}
                                         </span>
                                     </td>
                                     <td className="py-3 px-4 text-sm text-[var(--text)]">
@@ -234,7 +240,7 @@ export const UsersPage = () => {
                                                 onClick={() => handleEditClick(user)}
                                                 className="text-[var(--primary)] hover:underline font-medium text-sm"
                                             >
-                                                Edit Roles
+                                                Editar Roles
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteUser(user.id)}
@@ -253,10 +259,9 @@ export const UsersPage = () => {
             </div >
 
             {/* Modals */}
-            < CreateRoleModal
-                isOpen={isCreateRoleOpen}
-                onClose={() => setIsCreateRoleOpen(false)}
-                onRoleCreated={() => alert('Role definition created!')}
+            <ManageRolesModal
+                isOpen={isManageRolesOpen}
+                onClose={() => setIsManageRolesOpen(false)}
             />
 
             {
