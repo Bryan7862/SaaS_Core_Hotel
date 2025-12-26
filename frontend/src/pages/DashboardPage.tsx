@@ -115,21 +115,7 @@ export function DashboardPage() {
 
     const [loading, setLoading] = useState(true);
 
-    const loadData = async () => {
-        try {
-            const txs = await getTransactions();
-            // setTransactions(txs); // Removed unused state
-            processChartData(txs);
-        } catch (error) {
-            console.error("Failed to load transactions", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    useEffect(() => {
-        loadData();
-    }, []);
 
     // ... processChartData ...
 
@@ -192,6 +178,22 @@ export function DashboardPage() {
         // Update total ingresos KPI from processed data
         setKpis(prev => ({ ...prev, ingresos: areaResult.reduce((sum, d) => sum + d.ingresos, 0) }));
     };
+
+    const loadData = async () => {
+        try {
+            const txs = await getTransactions();
+            // setTransactions(txs); // Removed unused state
+            processChartData(txs);
+        } catch (error) {
+            console.error("Failed to load transactions", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     const handleAddIngresoGasto = async () => {
         if (formData.date && formData.amount) {
