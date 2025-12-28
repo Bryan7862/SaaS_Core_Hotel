@@ -82,7 +82,7 @@ export const EditRoleModal: React.FC<EditRoleModalProps> = ({ isOpen, onClose, r
                         // Better: If OWNER, readOnly=true.
                         readOnly={role.code === 'OWNER'}
                     />
-                    {role.code === 'OWNER' && <p className="text-sm text-gray-500 mt-2">El rol PROPIETARIO tiene acceso total irrevocable.</p>}
+                    {role.code === 'OWNER' && <p className="text-sm text-gray-500 mt-2">El rol PROPIETARIO tiene acceso total irrevocable para seguridad del sistema.</p>}
                 </div>
 
                 <div className="p-6 border-t bg-gray-50 flex justify-end gap-3 rounded-b-lg">
