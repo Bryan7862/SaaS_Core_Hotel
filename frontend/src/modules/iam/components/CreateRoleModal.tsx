@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { createRole } from '../api';
 
 interface CreateRoleModalProps {
     isOpen: boolean;
@@ -22,7 +22,7 @@ export const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ isOpen, onClos
         setError('');
 
         try {
-            await axios.post('http://localhost:3000/admin/iam/roles', {
+            await createRole({
                 code,
                 name,
                 description,
