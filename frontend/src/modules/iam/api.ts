@@ -24,5 +24,10 @@ export const syncRolePermissions = async (roleId: string, permissionIds: string[
     return api.post(`/admin/iam/roles/${roleId}/permissions/sync`, { permissionIds });
 };
 
-// Also export createRole if not already there, assuming CreateRoleModal uses axios directly or we standardize here.
-// CreateRoleModal used direct axios. Ideally we move it here but I won't break it now.
+export const deleteRole = async (roleId: string) => {
+    return api.delete(`/admin/iam/roles/${roleId}`);
+};
+
+export const createRole = async (data: { code: string; name: string; description: string }) => {
+    return api.post('/admin/iam/roles', data);
+};
