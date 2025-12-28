@@ -35,9 +35,12 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Auto-logout if token expired?
-            // localStorage.removeItem('access_token');
-            // window.location.href = '/login';
+            // Auto-logout if token expired
+            localStorage.removeItem('access_token');
+            // Check if we are already on login page to avoid loops
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }
