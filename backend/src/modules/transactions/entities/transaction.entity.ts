@@ -29,6 +29,20 @@ export class Transaction {
     @Column({ name: 'user_id', nullable: true, insert: false, update: false })
     userId: string;
 
+    // --- SaaS Payment Fields ---
+
+    @Column({ name: 'organization_id', nullable: true })
+    organizationId: string;
+
+    @Column({ name: 'reference_code', nullable: true })
+    referenceCode: string; // Culqi Charge ID (e.g. chr_live_...)
+
+    @Column({ default: 'manual' })
+    provider: string; // 'culqi', 'manual', etc.
+
+    @Column({ default: 'COMPLETED' })
+    status: string; // COMPLETED, PENDING, FAILED
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }
