@@ -10,6 +10,8 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
 const MAX_ORGANIZATIONS_PER_USER = 3;
 
+import { OrganizationSettings } from './entities/organization-settings.entity';
+
 @Injectable()
 export class OrganizationsService {
     constructor(
@@ -17,6 +19,8 @@ export class OrganizationsService {
         private companyRepository: Repository<Company>,
         @InjectRepository(UserRole)
         private userRoleRepository: Repository<UserRole>,
+        @InjectRepository(OrganizationSettings)
+        private settingsRepository: Repository<OrganizationSettings>,
         private iamService: IamService,
         private subscriptionsService: SubscriptionsService,
     ) { }
@@ -150,5 +154,32 @@ export class OrganizationsService {
         return this.companyRepository.find({
             where: { status: CompanyStatus.SUSPENDED },
         });
+    }
+
+    // --- Organization Settings Logic ---
+
+    async getSettings(companyId: string): Promise<OrganizationSettings> {
+        let settings = await this.settingsRepository.findOne({ where: { companyId } });
+        if (!settings) {
+            // Lazy Init: Check if company exists first
+            const company = await this.companyRepository.findOne({ where: { id: companyId } });
+            if (!company) throw new NotFoundException('Organization not found');
+
+            settings = this.settingsRepository.create({
+                companyId,
+                timezone: 'UTC',
+                currency: 'USD',
+                notificationsEnabled: true,
+                theme: 'system'
+            });
+            await this.settingsRepository.save(settings);
+        }
+        return settings;
+    }
+
+    async updateSettings(companyId: string, data: Partial<OrganizationSettings>): Promise<OrganizationSettings> {
+        const settings = await this.getSettings(companyId);
+        Object.assign(settings, data);
+        return this.settingsRepository.save(settings);
     }
 }
