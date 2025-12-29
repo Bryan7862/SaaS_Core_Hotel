@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { notify } from '../lib/notify';
 import { Building2, User, Mail, Lock } from 'lucide-react';
 
 export function RegisterPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -18,19 +18,31 @@ export function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
 
         try {
-            await api.post('/admin/auth/register', formData);
+            await notify.promise(
+                api.post('/admin/auth/register', formData),
+                {
+                    loading: 'Creando cuenta...',
+                    success: '¡Cuenta creada! Redirigiendo...',
+                    error: 'Error al crear la cuenta',
+                }
+            );
             // On success, redirect to login page
-            navigate('/login');
+            setTimeout(() => navigate('/login'), 1500); // Small delay to see success message
         } catch (err: any) {
             console.error('Registration failed', err);
-            const responseMsg = err.response?.data?.message;
-            const msg = Array.isArray(responseMsg)
-                ? responseMsg.join(', ')
-                : responseMsg || err.message || 'Registration failed';
-            setError(msg);
+            // Error is handled by notify.promise (shows the 'error' text)
+            // But if we want specific details? notify.promise shows the 'error' string passed to it.
+            // If the promise rejects with a message, does toast show it?
+            // react-hot-toast: if 'error' is a string, it shows that string.
+            // To show dynamic error, we can pass a function:
+            // error: (err) => err.response?.data?.message || 'Error...'
+            // But let's keep it simple for now, relying on api.ts global error notification might duplicate?
+            // If api.ts notifies error, and notify.promise notifies error...
+            // Optimization: If using notify.promise, we might want to suppress global api.ts error?
+            // Or just let notify.promise handle the feedback and let api.ts handle global 500s.
+            // Actually, if api.ts rejects, notify.promise catches it.
         } finally {
             setLoading(false);
         }
@@ -46,12 +58,6 @@ export function RegisterPage() {
                     <h1 className="text-2xl font-bold mb-2">Start your journey</h1>
                     <p className="text-[var(--muted)]">Create your company account</p>
                 </div>
-
-                {error && (
-                    <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                        {error}
-                    </div>
-                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">

@@ -6,6 +6,7 @@ import { Can } from '../../../components/Can';
 import { EditUserRoleModal } from '../components/EditUserRoleModal';
 import { ManageRolesModal } from '../components/ManageRolesModal';
 import { api } from '../../../lib/api'; // Using default axios instance for Create User for now
+import { notify } from '../../../lib/notify';
 
 export const UsersPage = () => {
     const [users, setUsers] = useState<any[]>([]);
@@ -19,13 +20,14 @@ export const UsersPage = () => {
     const [selectedUser, setSelectedUser] = useState<any>(null);
 
     const handleDeleteUser = async (userId: string) => {
-        if (!window.confirm('Are you sure you want to suspend this user? They can be restored from the Recycle Bin.')) return;
+        if (!window.confirm('¿Estás seguro de que deseas suspender este usuario? Podrás restaurarlo desde la Papelera.')) return;
         try {
             await api.delete(`/admin/auth/users/${userId}`);
             loadUsers();
+            notify.success('Usuario suspendido correctamente');
         } catch (error) {
             console.error('Failed to suspend user', error);
-            alert('Failed to suspend user');
+            notify.error('Error al suspender usuario');
         }
     };
 

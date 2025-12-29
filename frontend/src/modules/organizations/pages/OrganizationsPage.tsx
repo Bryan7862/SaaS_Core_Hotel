@@ -2,18 +2,26 @@ import { useEffect, useState } from 'react';
 import { Plus, ArrowRight, Trash2 } from 'lucide-react';
 import { getMyOrganizations, createOrganization } from '../api';
 import { api } from '../../../lib/api';
+import { notify } from '../../../lib/notify';
+import { StatusBadge } from '../../../components/ui/StatusBadge';
 
 export const OrganizationsPage = () => {
     // ... items ...
 
     const handleDeleteOrg = async (orgId: string) => {
-        if (!window.confirm('Are you sure you want to suspend this organization? It can be restored from the Recycle Bin.')) return;
+        if (!window.confirm('¿Estás seguro de que quieres suspender esta organización? Se puede restaurar desde la Papelera de reciclaje.')) return;
+
+        setSuspendingId(orgId);
         try {
             await api.delete(`/organizations/${orgId}`);
             loadOrgs();
-        } catch (error) {
+            notify.success('Organización suspendida correctamente');
+        } catch (error: any) {
             console.error('Failed to suspend organization', error);
-            alert('Failed to suspend organization');
+            // Show specific backend message if available
+            notify.error(error.response?.data?.message || 'Error al suspender organización');
+        } finally {
+            setSuspendingId(null);
         }
     };
     const [orgs, setOrgs] = useState<any[]>([]);
@@ -21,6 +29,7 @@ export const OrganizationsPage = () => {
     const [showCreate, setShowCreate] = useState(false);
     const [newOrgName, setNewOrgName] = useState('');
     const [creating, setCreating] = useState(false);
+    const [suspendingId, setSuspendingId] = useState<string | null>(null);
 
     useEffect(() => {
         loadOrgs();
@@ -47,10 +56,10 @@ export const OrganizationsPage = () => {
             setNewOrgName('');
             setShowCreate(false);
             loadOrgs();
+            notify.success('Organización creada exitosamente');
         } catch (error: any) {
             console.error('Failed to create organization', error);
-            const msg = error.response?.data?.message || error.message || 'Failed to create organization';
-            alert(`Error: ${JSON.stringify(msg)}`);
+            notify.error(error.response?.data?.message || 'Error al crear organización');
         } finally {
             setCreating(false);
         }
@@ -103,6 +112,7 @@ export const OrganizationsPage = () => {
                                         )}
                                     </div>
                                     <h3 className="text-lg font-medium text-[var(--text)] truncate">{org.name}</h3>
+                                    {org.status === 'SUSPENDED' && <StatusBadge status="SUSPENDED" className="ml-2" />}
                                 </div>
                                 <p className="mt-4 text-xs text-[var(--muted)] font-mono bg-[var(--bg-primary)] p-1 rounded inline-block">
                                     {org.slug}
@@ -118,12 +128,22 @@ export const OrganizationsPage = () => {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        if (org.status === 'SUSPENDED') return;
                                         handleDeleteOrg(org.id);
                                     }}
-                                    className="flex items-center justify-center px-3 py-2 border border-[var(--border)] text-sm font-medium rounded-md text-red-600 bg-[var(--card-bg)] hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                    title="Suspend Organization"
+                                    disabled={org.status === 'SUSPENDED' || suspendingId === org.id}
+                                    className={`flex items-center justify-center px-3 py-2 border border-[var(--border)] text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+                                        ${org.status === 'SUSPENDED'
+                                            ? 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
+                                            : 'text-red-600 bg-[var(--card-bg)] hover:bg-red-50'
+                                        }`}
+                                    title={org.status === 'SUSPENDED' ? 'Organización ya suspendida' : 'Suspender Organización'}
                                 >
-                                    <Trash2 size={16} />
+                                    {suspendingId === org.id ? (
+                                        <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <Trash2 size={16} />
+                                    )}
                                 </button>
                             </div>
                         </div>

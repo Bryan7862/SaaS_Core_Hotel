@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { notify } from '../../../lib/notify';
 
 export const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
 
         try {
             const response = await axios.post('http://localhost:3000/admin/auth/login', {
@@ -41,7 +40,17 @@ export const LoginPage = () => {
             navigate('/');
         } catch (err: any) {
             console.error('Login failed:', err);
-            setError(err.response?.data?.message || 'Login failed');
+            // If it's a 401 on Login, it means Bad Credentials (api.ts skips redirect for /login)
+            if (err.response?.status === 401) {
+                notify.error('Credenciales incorrectas. Verifica tu email y contraseña.');
+            } else if (!err.response) {
+                // Network error already handled by api.ts? 
+                // Actually this manual axios call MIGHT bypass api.ts interceptors if not using 'api' instance!
+                // Wait, LoginPage uses 'axios' directly!
+                notify.error('Error de conexión.');
+            } else {
+                notify.error(err.response?.data?.message || 'Error al iniciar sesión');
+            }
         }
     };
 
@@ -63,19 +72,6 @@ export const LoginPage = () => {
                 maxWidth: '400px'
             }}>
                 <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#333' }}>Sign In</h2>
-
-                {error && (
-                    <div style={{
-                        padding: '0.75rem',
-                        backgroundColor: '#fee2e2',
-                        color: '#dc2626',
-                        borderRadius: '4px',
-                        marginBottom: '1rem',
-                        fontSize: '0.875rem'
-                    }}>
-                        {error}
-                    </div>
-                )}
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div>
