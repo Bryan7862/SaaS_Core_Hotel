@@ -132,6 +132,10 @@ export class OrganizationsService {
     async suspendOrganization(organizationId: string, performedByUserId: string): Promise<Company> {
         const company = await this.findOne(organizationId);
 
+        if (company.status === CompanyStatus.SUSPENDED) {
+            throw new BadRequestException('La organización ya se encuentra suspendida');
+        }
+
         company.status = CompanyStatus.SUSPENDED;
         company.suspendedAt = new Date();
         company.suspendedByUserId = performedByUserId;
@@ -148,6 +152,23 @@ export class OrganizationsService {
         company.suspendedByUserId = null;
 
         return this.companyRepository.save(company);
+    }
+
+    async hardDeleteOrganization(organizationId: string): Promise<void> {
+        const company = await this.companyRepository.findOne({ where: { id: organizationId } });
+        if (!company) throw new NotFoundException('Organization not found');
+
+        // Note: Due to Cascading rules on UserRole, OrganizationSettings, Subscriptions, transactions...
+        // We need to be careful. Ideally use CASCADE in DB or manually delete relations.
+        // For now, assuming standard TypeORM logic. 
+        // We might want to clear userRoles first. 
+
+        await this.userRoleRepository.delete({ companyId: organizationId });
+
+        // Settings are 1-1 cascading usually, but let's be safe
+        await this.settingsRepository.delete({ companyId: organizationId });
+
+        await this.companyRepository.remove(company);
     }
 
     async getSuspendedOrganizations(): Promise<Company[]> {

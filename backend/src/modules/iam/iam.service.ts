@@ -239,6 +239,18 @@ export class IamService implements OnModuleInit {
         return this.roleRepository.findOne({ where: { code } });
     }
 
+    async countCompanyOwners(companyId: string): Promise<number> {
+        const ownerRole = await this.roleRepository.findOne({ where: { code: 'OWNER' } });
+        if (!ownerRole) return 0;
+
+        return this.userRoleRepository.count({
+            where: {
+                companyId,
+                roleId: ownerRole.id
+            }
+        });
+    }
+
     async countCompanyUsers(companyId: string): Promise<number> {
         return this.userRoleRepository.count({ where: { companyId } });
     }

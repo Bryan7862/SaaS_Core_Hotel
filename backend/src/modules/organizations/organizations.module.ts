@@ -10,11 +10,15 @@ import { IamModule } from '../iam/iam.module';
 
 import { OrganizationSettings } from './entities/organization-settings.entity';
 
+import { forwardRef } from '@nestjs/common';
+import { TrashModule } from '../trash/trash.module';
+
 @Module({
     imports: [
         TypeOrmModule.forFeature([Company, UserRole, OrganizationSettings]),
         IamModule,
         SubscriptionsModule,
+        forwardRef(() => TrashModule),
     ],
     controllers: [OrganizationsController, OrganizationSettingsController],
     providers: [OrganizationsService],
