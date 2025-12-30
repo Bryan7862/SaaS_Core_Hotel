@@ -4,24 +4,26 @@ import { getMyOrganizations, createOrganization } from '../api';
 import { api } from '../../../lib/api';
 import { notify } from '../../../lib/notify';
 import { StatusBadge } from '../../../components/ui/StatusBadge';
+import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 
 export const OrganizationsPage = () => {
     // ... items ...
 
-    const handleDeleteOrg = async (orgId: string) => {
-        if (!window.confirm('¿Estás seguro de que quieres suspender esta organización? Se puede restaurar desde la Papelera de reciclaje.')) return;
 
-        setSuspendingId(orgId);
+
+    const confirmSuspend = async () => {
+        if (!suspendingId) return;
+        setSubmittingSuspend(true);
         try {
-            await api.delete(`/organizations/${orgId}`);
+            await api.delete(`/organizations/${suspendingId}`);
             loadOrgs();
             notify.success('Organización suspendida correctamente');
+            setSuspendingId(null); // Close Modal
         } catch (error: any) {
             console.error('Failed to suspend organization', error);
-            // Show specific backend message if available
             notify.error(error.response?.data?.message || 'Error al suspender organización');
         } finally {
-            setSuspendingId(null);
+            setSubmittingSuspend(false);
         }
     };
     const [orgs, setOrgs] = useState<any[]>([]);
@@ -30,6 +32,7 @@ export const OrganizationsPage = () => {
     const [newOrgName, setNewOrgName] = useState('');
     const [creating, setCreating] = useState(false);
     const [suspendingId, setSuspendingId] = useState<string | null>(null);
+    const [submittingSuspend, setSubmittingSuspend] = useState(false);
 
     useEffect(() => {
         loadOrgs();
@@ -129,9 +132,9 @@ export const OrganizationsPage = () => {
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (org.status === 'SUSPENDED') return;
-                                        handleDeleteOrg(org.id);
+                                        setSuspendingId(org.id);
                                     }}
-                                    disabled={org.status === 'SUSPENDED' || suspendingId === org.id}
+                                    disabled={org.status === 'SUSPENDED'}
                                     className={`flex items-center justify-center px-3 py-2 border border-[var(--border)] text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
                                         ${org.status === 'SUSPENDED'
                                             ? 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
@@ -139,11 +142,7 @@ export const OrganizationsPage = () => {
                                         }`}
                                     title={org.status === 'SUSPENDED' ? 'Organización ya suspendida' : 'Suspender Organización'}
                                 >
-                                    {suspendingId === org.id ? (
-                                        <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                                    ) : (
-                                        <Trash2 size={16} />
-                                    )}
+                                    <Trash2 size={16} />
                                 </button>
                             </div>
                         </div>
@@ -183,11 +182,25 @@ export const OrganizationsPage = () => {
                                     >
                                         {creating ? 'Creando...' : 'Crear Organización'}
                                     </button>
+
                                 </div>
                             </form>
                         </div>
                     </div>
                 )}
+
+
+                {/* Confirm Suspend Modal */}
+                <ConfirmationModal
+                    isOpen={!!suspendingId}
+                    onClose={() => setSuspendingId(null)}
+                    onConfirm={confirmSuspend}
+                    title="Suspender Organización"
+                    message="¿Estás seguro de que quieres suspender esta organización? Se dejará de tener acceso a ella, pero se puede restaurar desde la Papelera de reciclaje por 30 días."
+                    confirmText="Suspender"
+                    variant="danger"
+                    loading={submittingSuspend}
+                />
             </div>
         </div >
     );
