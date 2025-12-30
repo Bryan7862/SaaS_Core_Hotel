@@ -73,6 +73,17 @@ export const notify = {
         toast.dismiss(toastId);
     },
 
+    // Info
+    info: (message: string) => {
+        toast(message, {
+            ...defaultOptions,
+            iconTheme: {
+                primary: '#3B82F6', // Blue-500
+                secondary: 'white',
+            },
+        });
+    },
+
     // Custom (Info/General)
     custom: (message: string) => {
         toast(message, defaultOptions);

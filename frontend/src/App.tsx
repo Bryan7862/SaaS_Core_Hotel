@@ -18,6 +18,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { OrganizationSettingsPage } from './modules/organizations/pages/OrganizationSettingsPage';
 import { TransactionsPage } from './modules/transactions/pages/TransactionsPage';
+import { SocketProvider } from './context/SocketContext';
 
 function App() {
     return (
@@ -31,35 +32,37 @@ function App() {
                             path="/*"
                             element={
                                 <RequireAuth>
-                                    <Layout>
-                                        <Routes>
-                                            <Route path="/" element={<DashboardPage />} />
-                                            {/* <Route path="/roles" element={<RolesPage />} /> */}
-                                            {/* New Sidebar Routes */}
-                                            <Route path="/sales/*" element={<ConstructionPage title="Ventas & POS" />} />
-                                            <Route path="/inventory/*" element={<ConstructionPage title="Gestión de Inventario" />} />
-                                            <Route path="/clients/*" element={<ConstructionPage title="Gestión de Clientes" />} />
-                                            <Route path="/suppliers/*" element={<ConstructionPage title="Proveedores" />} />
-                                            <Route path="/reports/*" element={<ConstructionPage title="Reportes y Analíticas" />} />
-                                            <Route path="/billing/*" element={<BillingPage />} />
+                                    <SocketProvider>
+                                        <Layout>
+                                            <Routes>
+                                                <Route path="/" element={<DashboardPage />} />
+                                                {/* <Route path="/roles" element={<RolesPage />} /> */}
+                                                {/* New Sidebar Routes */}
+                                                <Route path="/sales/*" element={<ConstructionPage title="Ventas & POS" />} />
+                                                <Route path="/inventory/*" element={<ConstructionPage title="Gestión de Inventario" />} />
+                                                <Route path="/clients/*" element={<ConstructionPage title="Gestión de Clientes" />} />
+                                                <Route path="/suppliers/*" element={<ConstructionPage title="Proveedores" />} />
+                                                <Route path="/reports/*" element={<ConstructionPage title="Reportes y Analíticas" />} />
+                                                <Route path="/billing/*" element={<BillingPage />} />
 
-                                            {/* Settings Routes */}
-                                            <Route path="/settings/general" element={<SettingsPage />} />
-                                            <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
-                                            <Route path="/settings/billing" element={<BillingPage />} />
-                                            <Route path="/settings/payments" element={<BillingPage />} />
-                                            <Route path="/settings/*" element={<ConstructionPage title="Configuración" />} />
+                                                {/* Settings Routes */}
+                                                <Route path="/settings/general" element={<SettingsPage />} />
+                                                <Route path="/settings/organization" element={<OrganizationSettingsPage />} />
+                                                <Route path="/settings/billing" element={<BillingPage />} />
+                                                <Route path="/settings/payments" element={<BillingPage />} />
+                                                <Route path="/settings/*" element={<ConstructionPage title="Configuración" />} />
 
-                                            {/* Legacy/Existing Routes */}
-                                            <Route path="/organizations" element={<OrganizationsPage />} />
-                                            <Route path="/users" element={<UsersPage />} />
-                                            <Route path="/profile" element={<ProfilePage />} />
-                                            <Route path="/transactions" element={<TransactionsPage />} />
-                                            <Route path="/pricing" element={<PricingPage />} />
-                                            <Route path="/trash" element={<TrashPage />} />
-                                            <Route path="*" element={<Navigate to="/" replace />} />
-                                        </Routes>
-                                    </Layout>
+                                                {/* Legacy/Existing Routes */}
+                                                <Route path="/organizations" element={<OrganizationsPage />} />
+                                                <Route path="/users" element={<UsersPage />} />
+                                                <Route path="/profile" element={<ProfilePage />} />
+                                                <Route path="/transactions" element={<TransactionsPage />} />
+                                                <Route path="/pricing" element={<PricingPage />} />
+                                                <Route path="/trash" element={<TrashPage />} />
+                                                <Route path="*" element={<Navigate to="/" replace />} />
+                                            </Routes>
+                                        </Layout>
+                                    </SocketProvider>
                                 </RequireAuth>
                             }
                         />
