@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { Plan } from './plan.entity';
 import { PlanCode } from '../enums/plan-code.enum';
 import { SubscriptionStatus } from '../enums/subscription-status.enum';
 import { Company } from '../../organizations/entities/company.entity';
@@ -22,6 +23,13 @@ export class Subscription {
         default: PlanCode.FREE
     })
     planCode: PlanCode;
+
+    @ManyToOne(() => Plan, (plan) => plan.subscriptions, { nullable: true }) // Nullable for migration safety or early items
+    @JoinColumn({ name: 'plan_id' })
+    plan: Plan;
+
+    @Column({ name: 'plan_id', type: 'uuid', nullable: true })
+    planId: string;
 
     @Column({
         type: 'enum',
