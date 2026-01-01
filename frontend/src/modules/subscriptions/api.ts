@@ -23,6 +23,11 @@ export const createPaymentOrder = async (planCode: string): Promise<{
     amount: number;
     currency: string;
 }> => {
-    const response = await api.post('/payments/checkout', { planCode });
+    const response = await api.post('/payments/subscribe', { planCode });
+    return response.data;
+};
+
+export const confirmPayment = async (planCode: string, chargeId: string): Promise<{ success: boolean }> => {
+    const response = await api.post('/payments/confirm', { planCode, chargeId });
     return response.data;
 };
