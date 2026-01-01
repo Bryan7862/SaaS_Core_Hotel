@@ -4,7 +4,7 @@ export interface Subscription {
     id: string;
     organizationId: string;
     planCode: 'FREE' | 'BASIC' | 'PRO';
-    status: 'ACTIVE' | 'PENDING_PAYMENT' | 'SUSPENDED' | 'CANCELED' | 'TRIAL';
+    status: 'ACTIVE' | 'PENDING_PAYMENT' | 'SUSPENDED' | 'CANCELED' | 'TRIAL' | 'PAST_DUE' | 'EXPIRED';
     amount?: number; // Only for UI display if needed
     currency?: string;
     interval?: string;

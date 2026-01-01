@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Check, Loader2, CreditCard } from 'lucide-react';
-import { getCurrentSubscription, createPaymentOrder, confirmPayment, Subscription } from '../api';
+import { getCurrentSubscription, createPaymentOrder, Subscription } from '../api';
+import { SubscriptionConfirmModal } from '../components/SubscriptionConfirmModal';
 
 const PLANS = [
     {
@@ -80,8 +80,23 @@ export const PricingPage = () => {
         }
     };
 
+    const [confirmingPlan, setConfirmingPlan] = useState<typeof PLANS[0] | null>(null);
+
+    const handleSubscribeClick = (plan: typeof PLANS[0]) => {
+        // If no active subscription (new user or expired), go straight to payment
+        if (!currentSub || currentSub.status === 'PAST_DUE' || currentSub.status === 'CANCELED') {
+            handleSubscribe(plan.code);
+            return;
+        }
+
+        // If user already has an active plan, show confirmation modal
+        setConfirmingPlan(plan);
+    };
+
     const handleSubscribe = async (planCode: string) => {
         setProcessing(planCode);
+        setConfirmingPlan(null); // Close modal if open
+
         try {
             const orderInfo = await createPaymentOrder(planCode);
 
@@ -182,19 +197,28 @@ export const PricingPage = () => {
                             </ul>
 
                             <button
-                                onClick={() => !isDisabled && handleSubscribe(plan.code)}
+                                onClick={() => !isDisabled && handleSubscribeClick(plan)}
                                 disabled={isDisabled}
                                 className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium transition-colors ${isCurrent
                                     ? 'bg-[var(--bg-primary)] text-[var(--muted)] cursor-not-allowed'
                                     : 'bg-[var(--primary)] text-white hover:opacity-90 shadow-md'
                                     }`}
                             >
-                                {processing === plan.code ? 'Cargando Culqi...' : isCurrent ? 'Tu Plan Actual' : 'Suscribirse'}
+                                {processing === plan.code ? 'Cargando Culqi...' : isCurrent ? 'Tu Plan Actual' : 'Cambiar a este Plan'}
                             </button>
                         </div>
                     );
                 })}
             </div>
+
+            <SubscriptionConfirmModal
+                isOpen={!!confirmingPlan}
+                onClose={() => setConfirmingPlan(null)}
+                onConfirm={() => confirmingPlan && handleSubscribe(confirmingPlan.code)}
+                newPlanName={confirmingPlan?.name || ''}
+                newPlanPrice={confirmingPlan?.price || ''}
+                isUpgrade={!!currentSub}
+            />
         </div>
     );
 };

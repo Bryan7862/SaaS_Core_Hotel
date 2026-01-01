@@ -74,6 +74,10 @@ export class PaymentsController {
             endsAt
         );
 
-        return { success: true, plan: planCode };
+        return {
+            success: true,
+            plan: planCode,
+            endsAt: endsAt, // Return new expiration date
+        };
     }
 }
