@@ -19,6 +19,11 @@ import { AuthProvider } from './context/AuthContext';
 import { OrganizationSettingsPage } from './modules/organizations/pages/OrganizationSettingsPage';
 import { TransactionsPage } from './modules/transactions/pages/TransactionsPage';
 import { SocketProvider } from './context/SocketContext';
+import { SalesPOSPage } from './modules/sales/pages/SalesPOSPage';
+import { ClientCreatePage } from './modules/clients/pages/ClientCreatePage';
+import { ProductsPage } from './modules/inventory/pages/ProductsPage';
+import { ReportsPage } from './modules/reports/pages/ReportsPage';
+import { ClientsListPage } from './modules/clients/pages/ClientsListPage';
 
 function App() {
     return (
@@ -38,10 +43,18 @@ function App() {
                                                 <Route path="/" element={<DashboardPage />} />
                                                 {/* <Route path="/roles" element={<RolesPage />} /> */}
                                                 {/* New Sidebar Routes */}
-                                                <Route path="/sales/*" element={<ConstructionPage title="Ventas & POS" />} />
+                                                <Route path="/sales/pos" element={<SalesPOSPage />} />
+                                                <Route path="/sales/*" element={<ConstructionPage title="Ventas" />} />
+
+                                                <Route path="/inventory/products" element={<ProductsPage />} />
                                                 <Route path="/inventory/*" element={<ConstructionPage title="Gestión de Inventario" />} />
-                                                <Route path="/clients/*" element={<ConstructionPage title="Gestión de Clientes" />} />
+
+                                                <Route path="/clients/new" element={<ClientCreatePage />} />
+                                                <Route path="/clients" element={<ClientsListPage />} />
+
                                                 <Route path="/suppliers/*" element={<ConstructionPage title="Proveedores" />} />
+
+                                                <Route path="/reports/sales" element={<ReportsPage />} />
                                                 <Route path="/reports/*" element={<ConstructionPage title="Reportes y Analíticas" />} />
                                                 <Route path="/billing/*" element={<BillingPage />} />
 
