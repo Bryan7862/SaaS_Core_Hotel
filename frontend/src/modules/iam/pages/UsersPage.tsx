@@ -111,15 +111,17 @@ export const UsersPage = () => {
                                 {error}
                             </div>
                         )}
-                        <form onSubmit={handleCreateUser} className="space-y-4">
+                        <form onSubmit={handleCreateUser} className="space-y-4" autoComplete="off">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
                                     <input
                                         type="text"
                                         required
+                                        name="firstName"
+                                        autoComplete="off"
                                         className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                        placeholder="Juan"
+                                        placeholder="Ingrese nombres"
                                         value={formData.firstName}
                                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                                     />
@@ -129,8 +131,10 @@ export const UsersPage = () => {
                                     <input
                                         type="text"
                                         required
+                                        name="lastName"
+                                        autoComplete="off"
                                         className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                        placeholder="Perez"
+                                        placeholder="Ingrese apellidos"
                                         value={formData.lastName}
                                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                     />
@@ -141,8 +145,10 @@ export const UsersPage = () => {
                                 <input
                                     type="email"
                                     required
+                                    name="email"
+                                    autoComplete="off"
                                     className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                                    placeholder="john@company.com"
+                                    placeholder="ejemplo@empresa.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
@@ -153,6 +159,8 @@ export const UsersPage = () => {
                                     type="password"
                                     required
                                     minLength={6}
+                                    name="new-password"
+                                    autoComplete="new-password"
                                     className="w-full bg-[var(--input-bg)] border border-[var(--border)] rounded px-3 py-2 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                     placeholder="Min. 6 caracteres"
                                     value={formData.password}
@@ -181,7 +189,7 @@ export const UsersPage = () => {
                 </div>
 
                 {/* Role Management Actions */}
-                < div className="bg-[var(--card-bg)] p-6 rounded-lg shadow-sm border border-[var(--border)] flex flex-col justify-center items-center text-center" >
+                <div className="bg-[var(--card-bg)] p-6 rounded-lg shadow-sm border border-[var(--border)] flex flex-col justify-center items-center text-center">
                     <div className="mb-4">
                         <h2 className="text-xl font-bold mb-2 text-[var(--text)]">Gestión de Roles</h2>
                         <p className="text-[var(--muted)]">Definir nuevos roles para la organización.</p>
@@ -195,7 +203,7 @@ export const UsersPage = () => {
                         </button>
                     </Can>
                 </div>
-            </div >
+            </div>
 
             {/* Users List */}
             <div className="bg-[var(--card-bg)] p-6 rounded-lg shadow-sm border border-[var(--border)] flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -258,7 +266,7 @@ export const UsersPage = () => {
                         </tbody>
                     </table>
                 </div>
-            </div >
+            </div>
 
             {/* Modals */}
             <ManageRolesModal
@@ -277,6 +285,6 @@ export const UsersPage = () => {
                     />
                 )
             }
-        </div >
+        </div>
     );
 };
