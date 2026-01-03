@@ -3,7 +3,7 @@ import { CulqiService } from './providers/culqi.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
-import { PlanCode } from '../subscriptions/enums/plan-code.enum';
+import { PlanCode } from '../plans/enums/plan-code.enum';
 
 @Controller('payments')
 export class PaymentsController {
