@@ -2,7 +2,7 @@ import { Controller, Post, Body, Headers, BadRequestException, Logger } from '@n
 import { CulqiService } from '../providers/culqi.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { SubscriptionsService } from '../../subscriptions/subscriptions.service';
-import { PlanCode } from '../../subscriptions/enums/plan-code.enum';
+import { PlanCode } from '../../plans/enums/plan-code.enum';
 
 @Controller('webhooks/culqi')
 export class CulqiWebhookController {

@@ -2,8 +2,9 @@ import { Injectable, NotFoundException, BadRequestException, OnModuleInit } from
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
-import { Plan } from './entities/plan.entity';
-import { PlanCode } from './enums/plan-code.enum';
+import { Plan } from '../plans/entities/plan.entity';
+import { PlansService } from '../plans/plans.service';
+import { PlanCode } from '../plans/enums/plan-code.enum';
 import { SubscriptionStatus } from './enums/subscription-status.enum';
 
 @Injectable()
@@ -11,8 +12,7 @@ export class SubscriptionsService {
     constructor(
         @InjectRepository(Subscription)
         private subscriptionRepository: Repository<Subscription>,
-        @InjectRepository(Plan)
-        private planRepository: Repository<Plan>,
+        private plansService: PlansService, // Injected
     ) { }
 
     // 1. Create Initial Subscription (30-day TRIAL)
@@ -30,43 +30,19 @@ export class SubscriptionsService {
         return this.subscriptionRepository.save(subscription);
     }
 
-    async onModuleInit() {
-        await this.seedPlans();
+    // seedPlans removed - handled by PlansService
+
+    async getPlanByCode(planCode: string): Promise<Plan> {
+        return this.plansService.getPlanByCode(planCode);
     }
 
-    private async seedPlans() {
-        const count = await this.planRepository.count();
-        if (count > 0) return;
-
-        console.log('Seeding Subscription Plans...');
-        const plans = [
-            { code: PlanCode.FREE, name: 'Gratuito', pricePe: 0, description: 'Para probar el sistema', features: { maxUsers: 1, maxStorage: '1GB', canAccessAnalytics: false } },
-            { code: PlanCode.BASIC, name: 'Emprendedor', pricePe: 29.90, description: 'Ideal para iniciar', features: { maxUsers: 5, maxStorage: '5GB', canAccessAnalytics: true } },
-            { code: PlanCode.PRO, name: 'Empresarial', pricePe: 99.90, description: 'Para equipos en crecimiento', features: { maxUsers: 10, maxStorage: '20GB', canAccessAnalytics: true } },
-            { code: PlanCode.MAX, name: 'Corporativo', pricePe: 299.90, description: 'Sin límites', features: { maxUsers: 50, maxStorage: '100GB', canAccessAnalytics: true } },
-        ];
-
-        for (const p of plans) {
-            await this.planRepository.save(this.planRepository.create(p));
-        }
-        console.log('Plans seeded successfully.');
-    }
-
-    async getPlanByCode(planCode: PlanCode): Promise<Plan> {
-        return this.planRepository.findOne({ where: { code: planCode } });
-    }
-
-    getPlanLimits(planCode: PlanCode, status: SubscriptionStatus): { maxUsers: number } {
+    getPlanLimits(planCode: string, status: SubscriptionStatus): { maxUsers: number } {
         if (status === SubscriptionStatus.TRIAL) return { maxUsers: 1 };
         if (status === SubscriptionStatus.PAST_DUE) return { maxUsers: 1 }; // Downgrade access on failure
         if (status === SubscriptionStatus.EXPIRED) return { maxUsers: 0 }; // Full block
 
-        switch (planCode) {
-            case PlanCode.BASIC: return { maxUsers: 5 };
-            case PlanCode.PRO: return { maxUsers: 10 }; // Updated to match seed
-            case PlanCode.MAX: return { maxUsers: 50 }; // Updated to match seed
-            default: return { maxUsers: 1 };
-        }
+        // Delegate to PlansService for raw limits
+        return this.plansService.getPlanLimitsRaw(planCode);
     }
 
     // ... (existing code)
@@ -104,6 +80,7 @@ export class SubscriptionsService {
         const subscription = await this.subscriptionRepository.findOne({ where: { organizationId } });
         if (!subscription) throw new NotFoundException('Subscription not found');
 
+        // Validate Plan Code using Plans Service check or Enum
         if (!Object.values(PlanCode).includes(newPlanCode)) {
             throw new BadRequestException('Invalid Plan Code');
         }
