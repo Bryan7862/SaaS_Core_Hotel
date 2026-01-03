@@ -103,6 +103,38 @@ export class TransactionsService {
         }, {});
     }
 
+    async getFinancialSummary(organizationId: string | null, userId: string | null, month: number, year: number) {
+        const startOfMonth = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+
+        const query = this.transactionRepository.createQueryBuilder('tx')
+            .select('tx.type')
+            .addSelect('SUM(tx.amount)', 'total')
+            .where('tx.date BETWEEN :start AND :end', { start: startOfMonth, end: endOfMonth })
+            .andWhere('tx.currency = :currency', { currency: 'PEN' }) // Force PEN
+            .andWhere('tx.type IN (:...types)', { types: ['ingreso', 'gasto'] });
+
+        if (organizationId) {
+            query.andWhere('tx.organizationId = :organizationId', { organizationId });
+        } else if (userId) {
+            query.andWhere('tx.userId = :userId', { userId });
+        }
+
+        const stats = await query.groupBy('tx.type').getRawMany();
+
+        const result = {
+            ingresos: 0,
+            gastos: 0,
+        };
+
+        for (const stat of stats) {
+            if (stat.tx_type === 'ingreso') result.ingresos = parseFloat(stat.total || '0');
+            if (stat.tx_type === 'gasto') result.gastos = parseFloat(stat.total || '0');
+        }
+
+        return result;
+    }
+
     async createSystemAdjustment(organizationId: string, data: { amount: number, description: string, type: 'ADJUSTMENT' | 'REFUND' }) {
         const transaction = this.transactionRepository.create({
             date: new Date().toISOString().split('T')[0],

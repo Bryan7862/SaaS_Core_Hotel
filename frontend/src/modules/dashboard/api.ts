@@ -22,6 +22,9 @@ export interface KpiData {
     clientes: number;
     facturas: number;
     inventario: number;
+    ingresos: number;
+    gastos: number;
+    balance: number;
 }
 
 export interface UpdateKpiDto {

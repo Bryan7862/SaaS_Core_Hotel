@@ -15,7 +15,7 @@ export class Transaction {
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     amount: number;
 
-    @Column({ length: 3, default: 'USD' })
+    @Column({ length: 3, default: 'PEN' })
     currency: string;
 
     @Column()

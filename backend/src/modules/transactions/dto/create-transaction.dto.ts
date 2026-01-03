@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsEnum, IsDateString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsDateString, IsOptional, IsNotEmpty, Min } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class CreateTransactionDto {
@@ -9,7 +9,9 @@ export class CreateTransactionDto {
     type: 'ingreso' | 'gasto';
 
     @Type(() => Number)
-    @IsOptional() // Allow it to pass, manual check if needed
+    @IsNumber()
+    @Min(0.01)
+    @IsNotEmpty()
     amount: number;
 
     @Transform(({ value }) => value || 'Sin descripción')

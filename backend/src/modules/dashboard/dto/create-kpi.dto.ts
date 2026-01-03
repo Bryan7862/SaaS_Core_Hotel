@@ -1,8 +1,8 @@
-import { IsString, IsNumber, IsOptional, Min, Max } from 'class-validator';
+import { IsString, IsNumber, IsOptional, Min, Max, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateKpiDto {
-    @IsString()
+    @IsEnum(['clientes', 'facturas', 'inventario'])
     kpiType: string; // 'clientes' | 'facturas' | 'inventario'
 
     @Type(() => Number)

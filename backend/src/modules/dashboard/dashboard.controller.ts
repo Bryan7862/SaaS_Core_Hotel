@@ -18,7 +18,7 @@ export class DashboardController {
         if (!userId) {
             throw new BadRequestException('User ID not found in token');
         }
-        return this.dashboardService.getKpisAsMap(userId);
+        return this.dashboardService.getKpisAsMap(userId, req.user);
     }
 
     /**
@@ -30,6 +30,6 @@ export class DashboardController {
         if (!userId) {
             throw new BadRequestException('User ID not found in token');
         }
-        return this.dashboardService.upsertKpi(userId, dto);
+        return this.dashboardService.upsertKpi(userId, dto, req.user);
     }
 }

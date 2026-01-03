@@ -23,6 +23,9 @@ export class DashboardKpi {
     @Column({ name: 'user_id' })
     userId: string;
 
+    @Column({ name: 'organization_id', nullable: true })
+    organizationId: string;
+
     @Column({ name: 'kpi_type', length: 50 })
     kpiType: string; // 'clientes' | 'facturas' | 'inventario'
 
