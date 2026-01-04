@@ -43,7 +43,7 @@ export class DashboardService {
         let kpi = await this.kpiRepository.findOne({
             where: {
                 userId,
-                organizationId: user?.defaultCompanyId, // Organization scope
+                // organizationId: user?.defaultCompanyId, // Removed to avoid conflict with Unique(user, kpi, month, year)
                 kpiType: dto.kpiType,
                 month,
                 year,
