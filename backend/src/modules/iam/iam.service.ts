@@ -44,6 +44,10 @@ export class IamService implements OnModuleInit {
 
         // Reports
         { resource: 'reports', action: 'read', description: 'Ver reportes del sistema' },
+
+        // Trash (Papelera)
+        { resource: 'trash', action: 'audit', description: 'Ver historial de auditoría de papelera' },
+        { resource: 'trash', action: 'hard_delete', description: 'Eliminar permanentemente elementos' },
     ];
 
     async onModuleInit() {

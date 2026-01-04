@@ -60,7 +60,7 @@ export class TrashController {
         return result;
     }
     @Delete('users/:id/permanent')
-    @RequirePermissions('users:delete')
+    @RequirePermissions('trash:hard_delete')
     async deleteUserPermanently(@Param('id') id: string, @Req() req, @Query('confirm') confirm: string) {
         if (confirm !== 'true') {
             throw new BadRequestException('Confirmation required (confirm=true) to permanently delete.');
@@ -84,7 +84,8 @@ export class TrashController {
     }
 
     @Delete('organizations/:id/permanent')
-    @RequirePermissions('organizations:delete') // Or a specific 'trash:hard_delete' permission
+    @Delete('organizations/:id/permanent')
+    @RequirePermissions('trash:hard_delete') // Consistent with seed
     async deleteOrganizationPermanently(@Param('id') id: string, @Req() req, @Query('confirm') confirm: string) {
         if (confirm !== 'true') {
             throw new BadRequestException('Confirmation required (confirm=true) to permanently delete.');

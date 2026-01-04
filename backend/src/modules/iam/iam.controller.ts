@@ -49,21 +49,21 @@ export class IamController {
 
     @UseGuards(JwtAuthGuard, PermissionsGuard)
     @RequirePermissions('roles:update')
-    @Post('roles/:roleId/permissions/:permissionId')
-    addPermissionToRole(
-        @Param('roleId') roleId: string,
-        @Param('permissionId') permissionId: string,
-    ) {
-        return this.iamService.addPermissionToRole(roleId, permissionId);
-    }
-
-    @UseGuards(JwtAuthGuard, PermissionsGuard)
-    @RequirePermissions('roles:update')
     @Post('roles/:roleId/permissions/sync')
     syncRolePermissions(
         @Param('roleId') roleId: string,
         @Body() body: { permissionIds: string[] },
     ) {
         return this.iamService.syncRolePermissions(roleId, body.permissionIds);
+    }
+
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @RequirePermissions('roles:update')
+    @Post('roles/:roleId/permissions/:permissionId')
+    addPermissionToRole(
+        @Param('roleId') roleId: string,
+        @Param('permissionId') permissionId: string,
+    ) {
+        return this.iamService.addPermissionToRole(roleId, permissionId);
     }
 }
