@@ -88,7 +88,7 @@ export function DashboardPage() {
         'Otros'
     ];
 
-    const openModal = (type: 'ingreso' | 'venta' | 'kpi') => {
+    const openModal = (type: 'ingreso' | 'venta' | 'kpi', specificKpi?: string) => {
         setModalType(type);
         setShowAddDataModal(true);
         // Reset form with defaults
@@ -98,10 +98,14 @@ export function DashboardPage() {
             amount: '',
             description: '',
             category: 'Electrónica',
-            kpiType: 'ingresos',
+            kpiType: specificKpi || 'clientes',
             kpiValue: ''
         });
     };
+
+    // ... (lines omitted)
+
+
 
     const getMonthName = (dateStr: string) => {
         if (!dateStr) return 'Desconocido';
@@ -170,12 +174,12 @@ export function DashboardPage() {
     const loadData = async () => {
         try {
             // Load transactions and KPIs in parallel
-            const [txs, kpisData] = await Promise.all([
-                getTransactions().catch(() => []),
+            const [txsResponse, kpisData] = await Promise.all([
+                getTransactions().catch(() => ({ data: [], total: 0 })),
                 getKpis().catch(() => ({ clientes: 0, facturas: 0, inventario: 0 }))
             ]);
 
-            processChartData(txs);
+            processChartData(txsResponse.data);
 
             // Update KPIs from backend (except ingresos which comes from transactions)
             setKpis(prev => ({
@@ -294,7 +298,7 @@ export function DashboardPage() {
                     trend={displayIngresos > 0 ? "+0%" : "0%"}
                     isPositive={displayIngresos > 0}
                     icon={DollarSign}
-                    onAdd={() => openModal('kpi')}
+                    onAdd={() => openModal('ingreso')}
                 />
                 <KpiCard
                     title="Nuevos Clientes"
@@ -302,7 +306,7 @@ export function DashboardPage() {
                     trend={kpis.clientes > 0 ? "+0%" : "0%"}
                     isPositive={kpis.clientes > 0}
                     icon={Users}
-                    onAdd={() => openModal('kpi')}
+                    onAdd={() => openModal('kpi', 'clientes')}
                 />
                 <KpiCard
                     title="Facturas Abiertas"
@@ -310,7 +314,7 @@ export function DashboardPage() {
                     trend="0%"
                     isPositive={false}
                     icon={FileText}
-                    onAdd={() => openModal('kpi')}
+                    onAdd={() => openModal('kpi', 'facturas')}
                 />
                 <KpiCard
                     title="Nivel de Inventario"
@@ -318,7 +322,7 @@ export function DashboardPage() {
                     trend={kpis.inventario > 0 ? "+0%" : "0%"}
                     isPositive={kpis.inventario > 0}
                     icon={Package}
-                    onAdd={() => openModal('kpi')}
+                    onAdd={() => openModal('kpi', 'inventario')}
                 />
             </div>
 
@@ -653,17 +657,10 @@ export function DashboardPage() {
                         {modalType === 'kpi' && (
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[var(--muted)] mb-1">Tipo de KPI</label>
-                                    <select
-                                        value={formData.kpiType}
-                                        onChange={(e) => setFormData({ ...formData, kpiType: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--input-bg)] text-[var(--text)]"
-                                    >
-                                        <option value="ingresos">Ingresos del Mes</option>
-                                        <option value="clientes">Nuevos Clientes</option>
-                                        <option value="facturas">Facturas Abiertas</option>
-                                        <option value="inventario">Nivel de Inventario</option>
-                                    </select>
+                                    <label className="block text-sm font-medium text-[var(--muted)] mb-1">Métrica</label>
+                                    <div className="w-full px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] text-[var(--muted)] capitalize">
+                                        {formData.kpiType}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-[var(--muted)] mb-1">Valor</label>
