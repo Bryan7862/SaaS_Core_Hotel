@@ -61,7 +61,7 @@ export const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ isOpen, onClos
                 width: '100%',
                 maxWidth: '500px'
             }}>
-                <h2 className="text-xl font-bold mb-4">Create New Role</h2>
+                <h2 className="text-xl font-bold mb-4">Crear Nuevo Rol</h2>
 
                 {error && (
                     <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">
@@ -71,32 +71,32 @@ export const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ isOpen, onClos
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Code (System Identifier)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Código (Identificador de Sistema)</label>
                         <input
                             type="text"
                             value={code}
                             onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="e.g. MANAGER"
+                            placeholder="Ej. GERENTE"
                             className="w-full border border-gray-300 rounded px-3 py-2"
                             required
                         />
-                        <p className="text-xs text-gray-500 mt-1">Uppercase, no spaces.</p>
+                        <p className="text-xs text-gray-500 mt-1">Mayúsculas, sin espacios.</p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Visible</label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g. Project Manager"
+                            placeholder="Ej. Gerente de Proyectos"
                             className="w-full border border-gray-300 rounded px-3 py-2"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
@@ -111,14 +111,14 @@ export const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ isOpen, onClos
                             onClick={onClose}
                             className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
                         >
-                            Cancel
+                            Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
                         >
-                            {loading ? 'Creating...' : 'Create Role'}
+                            {loading ? 'Creando...' : 'Crear Rol'}
                         </button>
                     </div>
                 </form>
